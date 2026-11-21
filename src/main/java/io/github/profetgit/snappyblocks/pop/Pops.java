@@ -434,12 +434,12 @@ public final class Pops {
         double peak = 1 + (Tune.get(Tune.POP_PEAK) - 1) * Config.get().amplitude();
         if (t <= 0) return start;
         if (t < peakAt) {
-            double u = 1 - t / peakAt;
-            return start + (peak - start) * (1 - u * u * u);
+            double u = t / peakAt;
+            return start + (peak - start) * (u * u * (3 - 2 * u));
         }
         if (t < ticks) {
             double u = (t - peakAt) / (ticks - peakAt);
-            return peak + (1 - peak) * (u * u * (3 - 2 * u));
+            return peak + (1 - peak) * (u * u * u * (u * (u * 6 - 15) + 10));
         }
         return 1;
     }

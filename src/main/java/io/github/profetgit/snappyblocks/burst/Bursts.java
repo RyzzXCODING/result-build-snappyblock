@@ -23,7 +23,6 @@ import io.github.profetgit.snappyblocks.pulse.Pulses;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.util.Util;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
@@ -138,7 +137,6 @@ public final class Bursts {
     private static final Int2ObjectOpenHashMap<Claim> CLAIMS = new Int2ObjectOpenHashMap<>();
     /** Items that arrived in the last ticks: a server sends a break's drops before its block update. */
     private static final List<double[]> RECENT = new ArrayList<>();
-    private static final RandomSource RANDOM = RandomSource.create();
     /** (sectionNode, compileTaskStartTimeNs) of meshes that went live; filled from mesh threads too. */
     private static final ConcurrentLinkedQueue<long[]> LIVE = new ConcurrentLinkedQueue<>();
     static final long MESH_LIMIT_NS = 150_000_000L;
@@ -393,10 +391,6 @@ public final class Bursts {
         RECENT.removeIf(r -> t - (long) r[4] > 2);
     }
 
-    /**
-     * Chunky chips cut from the block's texture, outward from the centre. Their flight follows the material (glass
-     * flatter and faster, leaves drift, sand and gravel fall sooner, wool soft).
-     */
     /** End of every frame: a new chip budget. */
     public static void frame() {
         frameChips = 0;
@@ -404,27 +398,8 @@ public final class Bursts {
 
     /** Returns how many chips it made. */
     private static int chips(Burst b) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || b.lite || !b.state.shouldSpawnTerrainParticles()) return 0;
-        int n = (int) Math.round(Tune.get(CHIPS));
-        switch (mc.options.particles().get()) {
-            case MINIMAL -> n = 0;
-            case DECREASED -> n /= 2;
-            default -> {
-            }
-        }
-        Chip.Material m = Chip.Material.of(b.state);
-        lastMaterial = m;
-        float size = (float) Tune.get(CHIP_SIZE);
-        double speed = 0.2 * Tune.get(CHIP_SPEED) * Config.get().amplitude();
-        for (int i = 0; i < n; i++) {
-            double ox = RANDOM.nextDouble() - 0.5, oy = RANDOM.nextDouble() - 0.5, oz = RANDOM.nextDouble() - 0.5;
-            Chip c = new Chip(mc.level, b.cx + ox * 0.8, b.cy + oy * 0.8, b.cz + oz * 0.8, 0, 0, 0, b.state, b.pos);
-            c.fly(m, ox * speed * 2, (oy + 0.6) * speed, oz * speed * 2);
-            c.scale(size * (0.75f + 0.5f * RANDOM.nextFloat()));
-            mc.particleEngine.add(c);
-        }
-        return n;
+        lastMaterial = Chip.Material.of(b.state);
+        return 0;
     }
 
     /** The hit-stop before the shrink: none for a bare burst, and none in Calm mode (PRD §5.6). */

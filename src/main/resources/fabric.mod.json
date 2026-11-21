@@ -3,6 +3,7 @@
   "id": "snappy_blocks",
   "version": "${version}",
   "name": "${name}",
+  "icon": "icon.png",
   "description": "${description}",
   "authors": ["${author}"],
   "contact": { "homepage": "${homepage}" },

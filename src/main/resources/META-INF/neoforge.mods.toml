@@ -6,6 +6,7 @@ license = "All Rights Reserved"
 modId = "snappy_blocks"
 version = "${version}"
 displayName = "${name}"
+icon = "icon.png"
 authors = "${author}"
 displayURL = "${homepage}"
 description = '''${description}'''

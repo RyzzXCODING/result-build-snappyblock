@@ -3,6 +3,7 @@ package io.github.profetgit.snappyblocks.mixin;
 import org.spongepowered.asm.mixin.Mixin;
 //? if >=1.21.2 {
 import io.github.profetgit.snappyblocks.Probe;
+import io.github.profetgit.snappyblocks.burst.BreakParticles;
 import io.github.profetgit.snappyblocks.burst.Bursts;
 import net.minecraft.client.renderer.LevelEventHandler;
 import net.minecraft.core.BlockPos;
@@ -15,8 +16,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class LevelEventHandlerMixin {
     @Inject(method = "levelEvent", at = @At("HEAD"))
     private void snappy_blocks$event(int type, BlockPos pos, int data, CallbackInfo ci) {
+        if (type == 2001) BreakParticles.begin();
         Probe.levelEvent(type, pos, data);
         Bursts.levelEvent(type, pos, data);
+    }
+
+    @Inject(method = "levelEvent", at = @At("RETURN"))
+    private void snappy_blocks$eventEnd(int type, BlockPos pos, int data, CallbackInfo ci) {
+        if (type == 2001) BreakParticles.end();
     }
 }
 //?} else {

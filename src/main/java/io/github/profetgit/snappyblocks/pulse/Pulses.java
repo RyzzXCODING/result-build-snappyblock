@@ -7,7 +7,6 @@ import io.github.profetgit.snappyblocks.Config;
 import io.github.profetgit.snappyblocks.Probe;
 import io.github.profetgit.snappyblocks.RenderPass;
 import io.github.profetgit.snappyblocks.Tune;
-import io.github.profetgit.snappyblocks.burst.Chip;
 import io.github.profetgit.snappyblocks.pop.PopRenderState;
 import io.github.profetgit.snappyblocks.pop.Pops;
 import io.github.profetgit.snappyblocks.pop.ShaderPack;
@@ -17,14 +16,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 /**
  * Mining pulse (PRD §5.2). Every mining hit (the miner's own first hit, then the server's level event 2020 every 4
- * ticks, for every miner in range; both reach ClientLevel.addBreakingBlockEffects with the sound flag) pushes the block out to pulse.peak and back in pulse.ticks, with a chip or two off
- * the hit face. The block stays in the chunk mesh: a copy a hair larger than the block is drawn over it (the bulge),
+ * ticks, for every miner in range; both reach ClientLevel.addBreakingBlockEffects with the sound flag) pushes the block out to pulse.peak and back in pulse.ticks.
+ * The block stays in the chunk mesh: a copy a hair larger than the block is drawn over it (the bulge),
  * so a pulse never waits on a remesh. The crack overlay and the outline scale with it ({@link #transform}).
  */
 public final class Pulses {
@@ -52,7 +50,6 @@ public final class Pulses {
     }
 
     private static final Long2ObjectOpenHashMap<Pulse> PULSES = new Long2ObjectOpenHashMap<>();
-    private static final RandomSource RANDOM = RandomSource.create();
 
     public static int started;
     public static long spentNanos;
@@ -97,36 +94,11 @@ public final class Pulses {
             PULSES.put(at.asLong(), p);
             started++;
         }
-        chips(level, at, state, face);
     }
 
     /** A block changed (broken, replaced): its pulse ends at once, the burst or the new block takes over. */
     public static void blockChanged(BlockPos pos) {
         if (!PULSES.isEmpty()) PULSES.remove(pos.asLong());
-    }
-
-    private static void chips(ClientLevel level, BlockPos pos, BlockState state, Direction face) {
-        if (!state.shouldSpawnTerrainParticles()) return;
-        int n = (int) Math.round(Tune.get(CHIPS));
-        switch (Minecraft.getInstance().options.particles().get()) {
-            case MINIMAL -> n = 0;
-            case DECREASED -> n = Math.min(n, 1);
-            default -> {
-            }
-        }
-        double amp = Config.get().amplitude();
-        for (int i = 0; i < n; i++) {
-            double u = RANDOM.nextDouble() - 0.5, v = RANDOM.nextDouble() - 0.5;
-            double x = pos.getX() + 0.5 + face.getStepX() * 0.52, y = pos.getY() + 0.5 + face.getStepY() * 0.52, z = pos.getZ() + 0.5 + face.getStepZ() * 0.52;
-            // spread across the face, flung out of it
-            if (face.getAxis() != Direction.Axis.X) x += u * 0.8;
-            if (face.getAxis() != Direction.Axis.Y) y += (face.getAxis() == Direction.Axis.X ? u : v) * 0.8;
-            if (face.getAxis() != Direction.Axis.Z) z += v * 0.8;
-            double out = 0.12 * amp;
-            Chip c = new Chip(level, x, y, z, face.getStepX() * out + u * 0.05, face.getStepY() * out + 0.08, face.getStepZ() * out + v * 0.05, state, pos);
-            c.scale(1.4f + 0.4f * RANDOM.nextFloat());
-            Minecraft.getInstance().particleEngine.add(c);
-        }
     }
 
     /** Scale at {@code t} ticks into a pulse: out to the peak in the first third, back by the end. */

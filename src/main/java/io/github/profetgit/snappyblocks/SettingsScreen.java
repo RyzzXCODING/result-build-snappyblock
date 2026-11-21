@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
  */
 public final class SettingsScreen extends OptionsSubScreen {
     public SettingsScreen(Screen parent) {
-        super(parent, Minecraft.getInstance().options, Component.literal("Snappy Blocks"));
+        super(parent, Minecraft.getInstance().options, Component.literal("SnappyBlock Modified by Alpoyy"));
     }
 
 //? if >=1.21 {
@@ -45,7 +45,7 @@ public final class SettingsScreen extends OptionsSubScreen {
     static OptionInstance<?>[] options() {
         Config c = Config.get();
         return new OptionInstance<?>[] {
-            OptionInstance.createBoolean("Snappy Blocks", OptionInstance.cachedConstantTooltip(Component.literal("Off: every block and item behaves like vanilla.")),
+            OptionInstance.createBoolean("SnappyBlock Modified by Alpoyy", OptionInstance.cachedConstantTooltip(Component.literal("Off: every block and item behaves like vanilla.")),
                 c.enabled, v -> c.enabled = v),
             new OptionInstance<>("Intensity", OptionInstance.cachedConstantTooltip(Component.literal("How big every movement is.")),
                 (caption, v) -> Component.literal("Intensity: " + v * 10 + "%"), new OptionInstance.IntRange(5, 15),

@@ -11,10 +11,10 @@ public final class Tune {
     static final Map<String, Double> DEFAULTS = new LinkedHashMap<>();
 
     public static final String POP_START = def("pop.start", 0.70);
-    public static final String POP_PEAK = def("pop.peak", 1.04);
-    public static final String POP_TICKS = def("pop.ticks", 5);
+    public static final String POP_PEAK = def("pop.peak", 1.06);
+    public static final String POP_TICKS = def("pop.ticks", 7);
     /** Share of pop.ticks spent growing to the peak; the rest settles to 1. */
-    public static final String POP_PEAK_AT = def("pop.peakAt", 0.5);
+    public static final String POP_PEAK_AT = def("pop.peakAt", 0.4);
 
     private Tune() {}
 
