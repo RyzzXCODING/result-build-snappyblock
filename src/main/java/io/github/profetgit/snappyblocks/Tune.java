@@ -12,9 +12,9 @@ public final class Tune {
 
     public static final String POP_START = def("pop.start", 0.70);
     public static final String POP_PEAK = def("pop.peak", 1.06);
-    public static final String POP_TICKS = def("pop.ticks", 7);
+    public static final String POP_TICKS = def("pop.ticks", 8);
     /** Share of pop.ticks spent growing to the peak; the rest settles to 1. */
-    public static final String POP_PEAK_AT = def("pop.peakAt", 0.4);
+    public static final String POP_PEAK_AT = def("pop.peakAt", 0.375);
 
     private Tune() {}
 
